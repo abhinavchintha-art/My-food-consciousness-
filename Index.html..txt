@@ -1,0 +1,1672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Food Consciousness</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      color-scheme: light;
+      --bg: #f9fafb;
+      --bg-card: #ffffff;
+      --border: #e5e7eb;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --primary: #2563eb;
+      --primary-soft: #dbeafe;
+      --good: #16a34a;
+      --high: #dc2626;
+      --low: #d97706;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #eff6ff, #f9fafb 45%);
+      color: var(--text-main);
+      min-height: 100vh;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 3rem;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 0.75rem;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    header h1 {
+      font-size: clamp(1.6rem, 3vw, 2.1rem);
+      font-weight: 700;
+    }
+
+    header p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      max-width: 30rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr);
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 800px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 0.9rem;
+      padding: 1.1rem 1.1rem 1rem;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+    }
+
+    .card h2 {
+      font-size: 1.1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .targets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+
+    label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 0.45rem 0.55rem;
+      font-size: 0.85rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border);
+      outline: none;
+      background: #ffffff;
+    }
+
+    input[type="number"]:focus,
+    select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.3);
+    }
+
+    .input-inline {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .pill {
+      padding: 0.15rem 0.45rem;
+      border-radius: 999px;
+      background: #f3f4f6;
+      font-size: 0.75rem;
+    }
+
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
+
+    .food-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .food-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      padding: 0.45rem 0.9rem;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, var(--primary), #1d4ed8);
+      color: white;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-ghost {
+      border-radius: 999px;
+      border: 1px dashed var(--border);
+      padding: 0.3rem 0.7rem;
+      background: transparent;
+      font-size: 0.8rem;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .btn-ghost:hover {
+      border-style: solid;
+    }
+
+    .foods-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+    }
+
+    .foods-table th,
+    .foods-table td {
+      padding: 0.3rem 0.35rem;
+      border-bottom: 1px solid #f3f4f6;
+      text-align: left;
+    }
+
+    .foods-table th {
+      font-weight: 600;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .btn-remove {
+      border: none;
+      background: transparent;
+      color: #9ca3af;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .btn-remove:hover {
+      color: #ef4444;
+    }
+
+    .summary-card {
+      margin-top: 1rem;
+    }
+
+    .summary-table,
+    .history-table,
+    .food-library-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+
+    .summary-table th,
+    .summary-table td,
+    .history-table th,
+    .history-table td,
+    .food-library-table th,
+    .food-library-table td {
+      padding: 0.35rem 0.35rem;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .summary-table th,
+    .history-table th,
+    .food-library-table th {
+      text-align: left;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .nutrient-name {
+      font-weight: 500;
+    }
+
+    .unit {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    .chip {
+      display: inline-block;
+      padding: 0.15rem 0.45rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .chip-ok {
+      background: #ecfdf3;
+      color: var(--good);
+    }
+
+    .chip-low {
+      background: #fffbeb;
+      color: var(--low);
+    }
+
+    .chip-high {
+      background: #fef2f2;
+      color: var(--high);
+    }
+
+    .chip-na {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .muted {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      margin-top: 0.35rem;
+    }
+
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .small-note {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .rda-box {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 0.5rem;
+      margin: 0.6rem 0 0.7rem;
+      background: #eff6ff;
+      border-radius: 0.6rem;
+      padding: 0.6rem;
+      border: 1px solid #dbeafe;
+    }
+
+    .food-library-table th,
+    .food-library-table td {
+      white-space: nowrap;
+    }
+
+    .food-library-wrapper {
+      overflow-x: auto;
+    }
+
+    .badge-small {
+      display: inline-block;
+      padding: 0.1rem 0.4rem;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #4f46e5;
+      font-size: 0.7rem;
+      margin-left: 0.3rem;
+    }
+
+    .history-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .history-summary {
+      margin-top: 0.4rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .history-summary strong {
+      color: var(--text-main);
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div>
+        <div class="badge">
+          ⚕️ My Food Consciousness
+          <span>Awareness of what you eat</span>
+        </div>
+        <h1>My Food Consciousness</h1>
+        <p>
+          Track your macros and micronutrients, auto-fill recommended targets,
+          and review your diet over days, weeks, and months.
+        </p>
+      </div>
+      <div class="small-note">
+        Educational tool only – exact RDA values vary by guideline and person.
+      </div>
+    </header>
+
+    <div class="layout">
+      <!-- LEFT: Targets + Food entry -->
+      <section class="card">
+        <h2>1. Set Daily Targets</h2>
+        <p>
+          Type your own targets, or use the helper below to approximate
+          recommended intakes based on age, sex, weight & activity.
+        </p>
+
+        <!-- RDA HELPER -->
+        <div>
+          <div class="section-title">
+            Quick RDA helper
+            <span class="badge-small">approx. RDA-style values</span>
+          </div>
+          <div class="rda-box">
+            <div class="input-group">
+              <label for="rda-age">Age</label>
+              <div class="input-inline">
+                <input type="number" id="rda-age" min="1" max="120" placeholder="Years" />
+                <span>yrs</span>
+              </div>
+            </div>
+            <div class="input-group">
+              <label for="rda-sex">Sex</label>
+              <select id="rda-sex">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label for="rda-weight">Weight</label>
+              <div class="input-inline">
+                <input type="number" id="rda-weight" min="10" max="200" placeholder="kg" />
+                <span>kg</span>
+              </div>
+            </div>
+            <div class="input-group">
+              <label for="rda-activity">Activity</label>
+              <select id="rda-activity">
+                <option value="sedentary">Sedentary</option>
+                <option value="light">Light</option>
+                <option value="moderate" selected>Moderate</option>
+                <option value="heavy">Heavy</option>
+              </select>
+            </div>
+          </div>
+          <button type="button" id="apply-rda" class="btn-primary">
+            ⚙️ Use Recommended Targets
+          </button>
+          <p class="muted">
+            Uses simplified RDA-like values scaled for body weight for macros.
+            Adjust manually as needed.
+          </p>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid #f3f4f6; margin: 0.9rem 0;" />
+
+        <!-- MANUAL TARGET INPUTS -->
+        <div class="targets-grid" id="targets-grid">
+          <!-- Inputs generated by JS -->
+        </div>
+
+        <p class="muted">
+          Targets update live – no save button needed.
+        </p>
+
+        <hr style="border: none; border-top: 1px solid #f3f4f6; margin: 0.9rem 0;" />
+
+        <!-- FOOD ENTRY -->
+        <div>
+          <div class="section-title">2. Add Foods Eaten (Today)</div>
+          <p class="small-note">
+            Choose a food, enter grams, and add it to today’s log. Nutrients are
+            approximate per 100 g (you can edit/extend the database in the code).
+          </p>
+          <form id="food-form" class="food-form">
+            <div class="food-row">
+              <div class="input-group">
+                <label for="food-select">Food</label>
+                <select id="food-select" required></select>
+              </div>
+              <div class="input-group">
+                <label for="food-grams">Amount</label>
+                <div class="input-inline">
+                  <input
+                    type="number"
+                    id="food-grams"
+                    placeholder="e.g. 150"
+                    min="1"
+                    step="1"
+                    required
+                  />
+                  <span>g</span>
+                </div>
+              </div>
+            </div>
+            <button type="submit" class="btn-primary">
+              ➕ Add to today's log
+            </button>
+          </form>
+
+          <div class="flex-between">
+            <span class="section-title">Today’s Food Log</span>
+            <button id="clear-log" class="btn-ghost" type="button">
+              Clear today
+            </button>
+          </div>
+
+          <table class="foods-table" id="foods-table">
+            <thead>
+              <tr>
+                <th>Food</th>
+                <th>Amount</th>
+                <th>Energy</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="foods-tbody">
+              <tr>
+                <td colspan="4" class="small-note">
+                  No foods added yet. Start by logging your first item.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- RIGHT: Summary -->
+      <section class="card summary-card">
+        <div class="flex-between">
+          <div>
+            <h2>3. Nutrient Summary (Today)</h2>
+            <p>
+              Total intake from all foods vs your targets, and % of each goal reached.
+            </p>
+          </div>
+        </div>
+
+        <table class="summary-table">
+          <thead>
+            <tr>
+              <th>Nutrient</th>
+              <th>Target</th>
+              <th>Consumed</th>
+              <th>Remaining</th>
+              <th>% Goal</th>
+            </tr>
+          </thead>
+          <tbody id="summary-body">
+            <!-- Rows filled by JS -->
+          </tbody>
+        </table>
+
+        <p class="muted">
+          Colour logic: <span class="chip chip-low">Low (&lt; 90%)</span>,
+          <span class="chip chip-ok">OK (90–110%)</span>,
+          <span class="chip chip-high">High (&gt; 110%)</span>.
+        </p>
+      </section>
+    </div>
+
+    <!-- FOOD INFORMATION SECTION -->
+    <section class="card" style="margin-top: 1.5rem;">
+      <div class="flex-between">
+        <div>
+          <h2>4. Food Information (per 100 g)</h2>
+          <p>
+            Quick reference for calories, macros and key micronutrients for the foods in this tool.
+          </p>
+        </div>
+      </div>
+
+      <div class="food-library-wrapper">
+        <table class="food-library-table">
+          <thead>
+            <tr>
+              <th>Food</th>
+              <th>kcal</th>
+              <th>Protein (g)</th>
+              <th>Carbs (g)</th>
+              <th>Fat (g)</th>
+              <th>Fibre (g)</th>
+              <th>Ca (mg)</th>
+              <th>Fe (mg)</th>
+              <th>K (mg)</th>
+              <th>Mg (mg)</th>
+              <th>Vit C (mg)</th>
+            </tr>
+          </thead>
+          <tbody id="food-library-body">
+            <!-- Filled by JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <p class="muted">
+        Values are approximate averages per 100 g from standard tables.
+        For precise clinical work, cross-check with official data (ICMR-NIN/USDA).
+      </p>
+    </section>
+
+    <!-- HISTORY / WEEKLY & MONTHLY REVIEW -->
+    <section class="card" style="margin-top: 1.5rem;">
+      <div class="flex-between">
+        <div>
+          <h2>5. Weekly & Monthly Review</h2>
+          <p>
+            Your daily logs are stored locally on this device so you can review
+            your diet over the last week or month.
+          </p>
+        </div>
+      </div>
+
+      <div class="history-controls">
+        <button id="view-week" class="btn-ghost" type="button">
+          Last 7 days
+        </button>
+        <button id="view-month" class="btn-ghost" type="button">
+          Last 30 days
+        </button>
+        <button id="view-all" class="btn-ghost" type="button">
+          All saved days
+        </button>
+      </div>
+
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Energy (kcal)</th>
+            <th>Protein (g)</th>
+            <th>Carbs (g)</th>
+            <th>Fat (g)</th>
+            <th>Fibre (g)</th>
+          </tr>
+        </thead>
+        <tbody id="history-body">
+          <tr>
+            <td colspan="6" class="small-note">
+              No history yet. Once you log foods on different days, you can view
+              your weekly and monthly summaries here.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div id="history-summary" class="history-summary"></div>
+    </section>
+  </div>
+
+  <script>
+    // ---------- NUTRIENTS YOU TRACK ----------
+    const nutrients = [
+      // Macros
+      { key: "calories", label: "Energy", unit: "kcal" },
+      { key: "protein", label: "Protein", unit: "g" },
+      { key: "carbs", label: "Carbohydrates", unit: "g" },
+      { key: "fat", label: "Total Fat", unit: "g" },
+      { key: "sat_fat", label: "Saturated Fat", unit: "g" },
+      { key: "unsat_fat", label: "Unsaturated Fat", unit: "g" },
+      { key: "poly_fat", label: "Polyunsaturated Fat", unit: "g" },
+      { key: "omega3", label: "Omega-3 Fats", unit: "g" },
+      { key: "fiber", label: "Fibre", unit: "g" },
+
+      // Major minerals
+      { key: "calcium", label: "Calcium", unit: "mg" },
+      { key: "phosphorus", label: "Phosphorus", unit: "mg" },
+      { key: "magnesium", label: "Magnesium", unit: "mg" },
+      { key: "sodium", label: "Sodium", unit: "mg" },
+      { key: "potassium", label: "Potassium", unit: "mg" },
+      { key: "chloride", label: "Chloride", unit: "mg" },
+
+      // Trace minerals
+      { key: "iron", label: "Iron", unit: "mg" },
+      { key: "zinc", label: "Zinc", unit: "mg" },
+      { key: "iodine", label: "Iodine", unit: "µg" },
+      { key: "selenium", label: "Selenium", unit: "µg" },
+      { key: "copper", label: "Copper", unit: "mg" },
+      { key: "manganese", label: "Manganese", unit: "mg" },
+
+      // Vitamins
+      { key: "vitA", label: "Vitamin A", unit: "µg RAE" },
+      { key: "vitD", label: "Vitamin D", unit: "IU" },
+      { key: "vitE", label: "Vitamin E", unit: "mg" },
+      { key: "vitK", label: "Vitamin K", unit: "µg" },
+      { key: "vitB1", label: "Vitamin B1 (Thiamine)", unit: "mg" },
+      { key: "vitB2", label: "Vitamin B2 (Riboflavin)", unit: "mg" },
+      { key: "vitB3", label: "Vitamin B3 (Niacin)", unit: "mg" },
+      { key: "vitB6", label: "Vitamin B6", unit: "mg" },
+      { key: "folate", label: "Folate (B9)", unit: "µg" },
+      { key: "b12", label: "Vitamin B12", unit: "µg" },
+      { key: "vitc", label: "Vitamin C", unit: "mg" }
+    ];
+
+    // ---------- FOOD DATABASE (per 100 g) ----------
+    const foodDatabase = {
+      // Staples
+      rice_cooked: {
+        name: "Rice, white cooked",
+        nutrients: {
+          calories: 130, protein: 2.4, carbs: 28, fat: 0.3,
+          sat_fat: 0.1, unsat_fat: 0.2, poly_fat: 0.1, omega3: 0,
+          fiber: 0.4, calcium: 10, phosphorus: 35, magnesium: 12,
+          sodium: 1, potassium: 35, chloride: 0, iron: 0.2, zinc: 0.4,
+          iodine: 0, selenium: 7, copper: 0.05, manganese: 0.4,
+          vitA: 0, vitD: 0, vitE: 0, vitK: 0,
+          vitB1: 0.02, vitB2: 0.01, vitB3: 1.5, vitB6: 0.05,
+          folate: 8, b12: 0, vitc: 0
+        }
+      },
+      brown_rice: {
+        name: "Rice, brown cooked",
+        nutrients: {
+          calories: 123, protein: 2.7, carbs: 25.6, fat: 1,
+          sat_fat: 0.2, unsat_fat: 0.8, poly_fat: 0.4, omega3: 0.03,
+          fiber: 1.8, calcium: 10, phosphorus: 105, magnesium: 44,
+          sodium: 4, potassium: 79, chloride: 0, iron: 0.4, zinc: 0.8,
+          iodine: 0, selenium: 7.5, copper: 0.09, manganese: 0.9,
+          vitA: 0, vitD: 0, vitE: 0.2, vitK: 0,
+          vitB1: 0.09, vitB2: 0.03, vitB3: 1.5, vitB6: 0.15,
+          folate: 9, b12: 0, vitc: 0
+        }
+      },
+      roti_wheat: {
+        name: "Roti, wheat",
+        nutrients: {
+          calories: 110, protein: 3.0, carbs: 20, fat: 1.8,
+          sat_fat: 0.4, unsat_fat: 1.4, poly_fat: 0.7, omega3: 0.02,
+          fiber: 2.0, calcium: 10, phosphorus: 80, magnesium: 30,
+          sodium: 2, potassium: 90, chloride: 0, iron: 1.1, zinc: 0.7,
+          iodine: 0, selenium: 25, copper: 0.1, manganese: 0.8,
+          vitA: 0, vitD: 0, vitE: 0.1, vitK: 0,
+          vitB1: 0.08, vitB2: 0.04, vitB3: 1.2, vitB6: 0.04,
+          folate: 18, b12: 0, vitc: 0
+        }
+      },
+      oats: {
+        name: "Oats, dry",
+        nutrients: {
+          calories: 389, protein: 16.9, carbs: 66.3, fat: 6.9,
+          sat_fat: 1.2, unsat_fat: 5.7, poly_fat: 2.5, omega3: 0.11,
+          fiber: 10.6, calcium: 54, phosphorus: 410, magnesium: 177,
+          sodium: 2, potassium: 429, chloride: 0, iron: 4.7, zinc: 3.9,
+          iodine: 0, selenium: 34, copper: 0.6, manganese: 4.9,
+          vitA: 0, vitD: 0, vitE: 0.4, vitK: 2,
+          vitB1: 0.76, vitB2: 0.14, vitB3: 0.96, vitB6: 0.12,
+          folate: 56, b12: 0, vitc: 0
+        }
+      },
+      poha: {
+        name: "Poha (flattened rice cooked)",
+        nutrients: {
+          calories: 150, protein: 3.0, carbs: 30, fat: 2.5,
+          sat_fat: 0.7, unsat_fat: 1.8, poly_fat: 0.8, omega3: 0.02,
+          fiber: 1.5, calcium: 20, phosphorus: 60, magnesium: 25,
+          sodium: 250, potassium: 80, chloride: 0, iron: 1.5, zinc: 0.5,
+          iodine: 0, selenium: 3, copper: 0.1, manganese: 0.4,
+          vitA: 50, vitD: 0, vitE: 0.3, vitK: 2,
+          vitB1: 0.08, vitB2: 0.04, vitB3: 1.0, vitB6: 0.07,
+          folate: 20, b12: 0, vitc: 3
+        }
+      },
+      idli: {
+        name: "Idli (rice-dal steamed)",
+        nutrients: {
+          calories: 150, protein: 5.0, carbs: 28, fat: 2,
+          sat_fat: 0.5, unsat_fat: 1.5, poly_fat: 0.7, omega3: 0.02,
+          fiber: 1.0, calcium: 15, phosphorus: 70, magnesium: 18,
+          sodium: 230, potassium: 90, chloride: 0, iron: 1.0, zinc: 0.6,
+          iodine: 0, selenium: 3, copper: 0.1, manganese: 0.5,
+          vitA: 0, vitD: 0, vitE: 0.1, vitK: 1,
+          vitB1: 0.06, vitB2: 0.03, vitB3: 0.7, vitB6: 0.05,
+          folate: 20, b12: 0, vitc: 0
+        }
+      },
+      dosa_plain: {
+        name: "Dosa (plain)",
+        nutrients: {
+          calories: 180, protein: 4.0, carbs: 30, fat: 5,
+          sat_fat: 1.0, unsat_fat: 4.0, poly_fat: 1.8, omega3: 0.03,
+          fiber: 1.0, calcium: 15, phosphorus: 80, magnesium: 20,
+          sodium: 250, potassium: 100, chloride: 0, iron: 1.5, zinc: 0.6,
+          iodine: 0, selenium: 3, copper: 0.1, manganese: 0.5,
+          vitA: 0, vitD: 0, vitE: 0.3, vitK: 2,
+          vitB1: 0.08, vitB2: 0.04, vitB3: 1.0, vitB6: 0.06,
+          folate: 20, b12: 0, vitc: 0
+        }
+      },
+
+      // Pulses / legumes
+      dal_cooked: {
+        name: "Dal, cooked (mixed)",
+        nutrients: {
+          calories: 120, protein: 8, carbs: 18, fat: 1,
+          sat_fat: 0.2, unsat_fat: 0.8, poly_fat: 0.5, omega3: 0.05,
+          fiber: 5, calcium: 25, phosphorus: 150, magnesium: 40,
+          sodium: 5, potassium: 250, chloride: 0, iron: 2.0, zinc: 1.0,
+          iodine: 0, selenium: 3, copper: 0.3, manganese: 0.6,
+          vitA: 0, vitD: 0, vitE: 0.1, vitK: 3,
+          vitB1: 0.15, vitB2: 0.05, vitB3: 1.0, vitB6: 0.1,
+          folate: 90, b12: 0, vitc: 1
+        }
+      },
+      rajma_cooked: {
+        name: "Rajma, cooked",
+        nutrients: {
+          calories: 127, protein: 8.7, carbs: 22.8, fat: 0.5,
+          sat_fat: 0.1, unsat_fat: 0.4, poly_fat: 0.2, omega3: 0.03,
+          fiber: 6.4, calcium: 28, phosphorus: 140, magnesium: 45,
+          sodium: 2, potassium: 400, chloride: 0, iron: 2.9, zinc: 1.0,
+          iodine: 0, selenium: 2, copper: 0.3, manganese: 0.4,
+          vitA: 0, vitD: 0, vitE: 0.1, vitK: 5,
+          vitB1: 0.08, vitB2: 0.05, vitB3: 0.6, vitB6: 0.15,
+          folate: 90, b12: 0, vitc: 1
+        }
+      },
+      chana_cooked: {
+        name: "Chana (chickpeas) cooked",
+        nutrients: {
+          calories: 164, protein: 8.9, carbs: 27.4, fat: 2.6,
+          sat_fat: 0.3, unsat_fat: 2.3, poly_fat: 1.1, omega3: 0.05,
+          fiber: 7.6, calcium: 49, phosphorus: 168, magnesium: 48,
+          sodium: 7, potassium: 291, chloride: 0, iron: 2.9, zinc: 1.5,
+          iodine: 0, selenium: 3, copper: 0.3, manganese: 1.0,
+          vitA: 3, vitD: 0, vitE: 0.4, vitK: 4,
+          vitB1: 0.1, vitB2: 0.06, vitB3: 0.5, vitB6: 0.14,
+          folate: 170, b12: 0, vitc: 2
+        }
+      },
+      soy_chunks: {
+        name: "Soy chunks (rehydrated)",
+        nutrients: {
+          calories: 120, protein: 16, carbs: 9, fat: 3,
+          sat_fat: 0.4, unsat_fat: 2.6, poly_fat: 1.3, omega3: 0.2,
+          fiber: 8, calcium: 120, phosphorus: 250, magnesium: 90,
+          sodium: 15, potassium: 500, chloride: 0, iron: 4, zinc: 2,
+          iodine: 0, selenium: 5, copper: 0.5, manganese: 1.0,
+          vitA: 0, vitD: 0, vitE: 0.5, vitK: 9,
+          vitB1: 0.2, vitB2: 0.2, vitB3: 1.0, vitB6: 0.2,
+          folate: 70, b12: 0, vitc: 0
+        }
+      },
+
+      // Dairy
+      milk_toned: {
+        name: "Milk, toned",
+        nutrients: {
+          calories: 70, protein: 3.4, carbs: 5, fat: 3,
+          sat_fat: 2, unsat_fat: 1, poly_fat: 0.1, omega3: 0.05,
+          fiber: 0, calcium: 120, phosphorus: 95, magnesium: 11,
+          sodium: 44, potassium: 150, chloride: 0, iron: 0, zinc: 0.4,
+          iodine: 20, selenium: 2, copper: 0.02, manganese: 0.01,
+          vitA: 60, vitD: 40, vitE: 0.1, vitK: 0.3,
+          vitB1: 0.04, vitB2: 0.18, vitB3: 0.1, vitB6: 0.04,
+          folate: 5, b12: 0.5, vitc: 1
+        }
+      },
+      curd_plain: {
+        name: "Curd / Yogurt, plain",
+        nutrients: {
+          calories: 60, protein: 3.5, carbs: 4.5, fat: 3,
+          sat_fat: 2, unsat_fat: 1, poly_fat: 0.1, omega3: 0.03,
+          fiber: 0, calcium: 110, phosphorus: 90, magnesium: 11,
+          sodium: 36, potassium: 140, chloride: 0, iron: 0.1, zinc: 0.5,
+          iodine: 18, selenium: 2, copper: 0.02, manganese: 0.01,
+          vitA: 55, vitD: 30, vitE: 0.1, vitK: 0.3,
+          vitB1: 0.04, vitB2: 0.16, vitB3: 0.1, vitB6: 0.04,
+          folate: 7, b12: 0.4, vitc: 0
+        }
+      },
+      paneer: {
+        name: "Paneer",
+        nutrients: {
+          calories: 260, protein: 18, carbs: 3, fat: 20,
+          sat_fat: 12, unsat_fat: 8, poly_fat: 1, omega3: 0.1,
+          fiber: 0, calcium: 200, phosphorus: 140, magnesium: 15,
+          sodium: 22, potassium: 100, chloride: 0, iron: 0.8, zinc: 2.1,
+          iodine: 18, selenium: 6, copper: 0.02, manganese: 0.01,
+          vitA: 200, vitD: 60, vitE: 0.3, vitK: 1,
+          vitB1: 0.05, vitB2: 0.2, vitB3: 0.1, vitB6: 0.05,
+          folate: 15, b12: 0.8, vitc: 0
+        }
+      },
+
+      // Nuts & seeds
+      almonds: {
+        name: "Almonds",
+        nutrients: {
+          calories: 580, protein: 21, carbs: 22, fat: 50,
+          sat_fat: 3.8, unsat_fat: 46.2, poly_fat: 12.5, omega3: 0.05,
+          fiber: 12, calcium: 260, phosphorus: 480, magnesium: 270,
+          sodium: 1, potassium: 700, chloride: 0, iron: 3.7, zinc: 3.1,
+          iodine: 0, selenium: 4, copper: 1.0, manganese: 2.2,
+          vitA: 1, vitD: 0, vitE: 25, vitK: 0,
+          vitB1: 0.2, vitB2: 1.1, vitB3: 3.4, vitB6: 0.14,
+          folate: 50, b12: 0, vitc: 0
+        }
+      },
+      walnut: {
+        name: "Walnuts",
+        nutrients: {
+          calories: 654, protein: 15, carbs: 14, fat: 65,
+          sat_fat: 6, unsat_fat: 59, poly_fat: 47, omega3: 9,
+          fiber: 6.7, calcium: 98, phosphorus: 346, magnesium: 158,
+          sodium: 2, potassium: 441, chloride: 0, iron: 2.9, zinc: 3.1,
+          iodine: 0, selenium: 4.9, copper: 1.6, manganese: 3.4,
+          vitA: 1, vitD: 0, vitE: 0.7, vitK: 2.7,
+          vitB1: 0.34, vitB2: 0.15, vitB3: 1.1, vitB6: 0.54,
+          folate: 98, b12: 0, vitc: 1.3
+        }
+      },
+      peanuts: {
+        name: "Peanuts (roasted)",
+        nutrients: {
+          calories: 567, protein: 25.8, carbs: 16.1, fat: 49.2,
+          sat_fat: 6.3, unsat_fat: 42.9, poly_fat: 16.2, omega3: 0.03,
+          fiber: 8.5, calcium: 92, phosphorus: 397, magnesium: 168,
+          sodium: 18, potassium: 705, chloride: 0, iron: 4.6, zinc: 3.3,
+          iodine: 0, selenium: 7.2, copper: 1.1, manganese: 2.0,
+          vitA: 0, vitD: 0, vitE: 8.3, vitK: 0,
+          vitB1: 0.6, vitB2: 0.1, vitB3: 12, vitB6: 0.3,
+          folate: 240, b12: 0, vitc: 0
+        }
+      },
+      flaxseed: {
+        name: "Flaxseeds",
+        nutrients: {
+          calories: 534, protein: 18, carbs: 29, fat: 42,
+          sat_fat: 3.7, unsat_fat: 38.3, poly_fat: 29, omega3: 23,
+          fiber: 27, calcium: 255, phosphorus: 642, magnesium: 392,
+          sodium: 30, potassium: 813, chloride: 0, iron: 5.7, zinc: 4.3,
+          iodine: 0, selenium: 25, copper: 1.2, manganese: 2.5,
+          vitA: 0, vitD: 0, vitE: 0.3, vitK: 4.3,
+          vitB1: 1.6, vitB2: 0.2, vitB3: 3.1, vitB6: 0.5,
+          folate: 87, b12: 0, vitc: 0
+        }
+      },
+      chia: {
+        name: "Chia seeds",
+        nutrients: {
+          calories: 486, protein: 17, carbs: 42, fat: 31,
+          sat_fat: 3.3, unsat_fat: 27.7, poly_fat: 24, omega3: 17.8,
+          fiber: 34, calcium: 631, phosphorus: 860, magnesium: 335,
+          sodium: 16, potassium: 407, chloride: 0, iron: 7.7, zinc: 4.6,
+          iodine: 0, selenium: 55, copper: 0.9, manganese: 2.7,
+          vitA: 54, vitD: 0, vitE: 0.5, vitK: 0,
+          vitB1: 0.6, vitB2: 0.2, vitB3: 8.8, vitB6: 0.1,
+          folate: 49, b12: 0, vitc: 1.6
+        }
+      },
+
+      // Vegetables
+      spinach: {
+        name: "Spinach, raw",
+        nutrients: {
+          calories: 23, protein: 2.9, carbs: 3.6, fat: 0.4,
+          sat_fat: 0.1, unsat_fat: 0.3, poly_fat: 0.2, omega3: 0.14,
+          fiber: 2.2, calcium: 99, phosphorus: 49, magnesium: 79,
+          sodium: 79, potassium: 558, chloride: 0, iron: 2.7, zinc: 0.5,
+          iodine: 0, selenium: 1, copper: 0.13, manganese: 0.9,
+          vitA: 470, vitD: 0, vitE: 2, vitK: 483,
+          vitB1: 0.08, vitB2: 0.19, vitB3: 0.7, vitB6: 0.2,
+          folate: 194, b12: 0, vitc: 28
+        }
+      },
+      carrot: {
+        name: "Carrot, raw",
+        nutrients: {
+          calories: 41, protein: 0.9, carbs: 10, fat: 0.2,
+          sat_fat: 0.04, unsat_fat: 0.16, poly_fat: 0.12, omega3: 0.01,
+          fiber: 2.8, calcium: 33, phosphorus: 35, magnesium: 12,
+          sodium: 69, potassium: 320, chloride: 0, iron: 0.3, zinc: 0.2,
+          iodine: 0, selenium: 0.1, copper: 0.05, manganese: 0.14,
+          vitA: 835, vitD: 0, vitE: 0.7, vitK: 13,
+          vitB1: 0.06, vitB2: 0.05, vitB3: 1, vitB6: 0.1,
+          folate: 19, b12: 0, vitc: 6
+        }
+      },
+      tomato: {
+        name: "Tomato, raw",
+        nutrients: {
+          calories: 18, protein: 0.9, carbs: 3.9, fat: 0.2,
+          sat_fat: 0.03, unsat_fat: 0.17, poly_fat: 0.08, omega3: 0.02,
+          fiber: 1.2, calcium: 10, phosphorus: 24, magnesium: 11,
+          sodium: 5, potassium: 237, chloride: 0, iron: 0.3, zinc: 0.2,
+          iodine: 0, selenium: 0.4, copper: 0.06, manganese: 0.1,
+          vitA: 42, vitD: 0, vitE: 0.5, vitK: 7.9,
+          vitB1: 0.04, vitB2: 0.02, vitB3: 0.6, vitB6: 0.08,
+          folate: 15, b12: 0, vitc: 14
+        }
+      },
+      peas: {
+        name: "Green peas, boiled",
+        nutrients: {
+          calories: 84, protein: 5.4, carbs: 15.6, fat: 0.4,
+          sat_fat: 0.1, unsat_fat: 0.3, poly_fat: 0.2, omega3: 0.04,
+          fiber: 5.5, calcium: 25, phosphorus: 108, magnesium: 33,
+          sodium: 3, potassium: 271, chloride: 0, iron: 1.5, zinc: 1.0,
+          iodine: 0, selenium: 1.2, copper: 0.2, manganese: 0.4,
+          vitA: 38, vitD: 0, vitE: 0.1, vitK: 24,
+          vitB1: 0.2, vitB2: 0.1, vitB3: 2, vitB6: 0.2,
+          folate: 65, b12: 0, vitc: 14
+        }
+      },
+
+      // Fruits
+      banana: {
+        name: "Banana",
+        nutrients: {
+          calories: 89, protein: 1.1, carbs: 23, fat: 0.3,
+          sat_fat: 0.1, unsat_fat: 0.2, poly_fat: 0.1, omega3: 0.02,
+          fiber: 2.6, calcium: 5, phosphorus: 22, magnesium: 27,
+          sodium: 1, potassium: 358, chloride: 0, iron: 0.3, zinc: 0.2,
+          iodine: 0, selenium: 1, copper: 0.08, manganese: 0.3,
+          vitA: 64, vitD: 0, vitE: 0.1, vitK: 0.5,
+          vitB1: 0.03, vitB2: 0.07, vitB3: 0.7, vitB6: 0.37,
+          folate: 20, b12: 0, vitc: 9
+        }
+      },
+      apple: {
+        name: "Apple, with peel",
+        nutrients: {
+          calories: 52, protein: 0.3, carbs: 14, fat: 0.2,
+          sat_fat: 0.03, unsat_fat: 0.17, poly_fat: 0.1, omega3: 0.01,
+          fiber: 2.4, calcium: 6, phosphorus: 11, magnesium: 5,
+          sodium: 1, potassium: 107, chloride: 0, iron: 0.1, zinc: 0.04,
+          iodine: 0, selenium: 0.1, copper: 0.03, manganese: 0.04,
+          vitA: 3, vitD: 0, vitE: 0.2, vitK: 2.2,
+          vitB1: 0.02, vitB2: 0.03, vitB3: 0.1, vitB6: 0.04,
+          folate: 3, b12: 0, vitc: 5
+        }
+      },
+      orange: {
+        name: "Orange, sweet",
+        nutrients: {
+          calories: 47, protein: 0.9, carbs: 12, fat: 0.1,
+          sat_fat: 0.02, unsat_fat: 0.08, poly_fat: 0.02, omega3: 0.02,
+          fiber: 2.4, calcium: 40, phosphorus: 14, magnesium: 10,
+          sodium: 0, potassium: 181, chloride: 0, iron: 0.1, zinc: 0.1,
+          iodine: 0, selenium: 0.5, copper: 0.04, manganese: 0.03,
+          vitA: 11, vitD: 0, vitE: 0.2, vitK: 0,
+          vitB1: 0.09, vitB2: 0.04, vitB3: 0.3, vitB6: 0.06,
+          folate: 30, b12: 0, vitc: 53
+        }
+      },
+      papaya: {
+        name: "Papaya, ripe",
+        nutrients: {
+          calories: 43, protein: 0.5, carbs: 11, fat: 0.3,
+          sat_fat: 0.1, unsat_fat: 0.2, poly_fat: 0.1, omega3: 0.02,
+          fiber: 1.7, calcium: 20, phosphorus: 10, magnesium: 21,
+          sodium: 8, potassium: 182, chloride: 0, iron: 0.3, zinc: 0.1,
+          iodine: 0, selenium: 0.6, copper: 0.05, manganese: 0.04,
+          vitA: 47, vitD: 0, vitE: 0.3, vitK: 2.6,
+          vitB1: 0.02, vitB2: 0.03, vitB3: 0.3, vitB6: 0.04,
+          folate: 37, b12: 0, vitc: 61
+        }
+      },
+      guava: {
+        name: "Guava",
+        nutrients: {
+          calories: 68, protein: 2.6, carbs: 14, fat: 1,
+          sat_fat: 0.3, unsat_fat: 0.7, poly_fat: 0.4, omega3: 0.06,
+          fiber: 5.4, calcium: 18, phosphorus: 40, magnesium: 22,
+          sodium: 2, potassium: 417, chloride: 0, iron: 0.3, zinc: 0.2,
+          iodine: 0, selenium: 0.6, copper: 0.2, manganese: 0.2,
+          vitA: 31, vitD: 0, vitE: 0.7, vitK: 2.6,
+          vitB1: 0.07, vitB2: 0.04, vitB3: 1.1, vitB6: 0.1,
+          folate: 49, b12: 0, vitc: 228
+        }
+      }
+    };
+
+    // ---------- STATE ----------
+    const targets = {};
+    const totals = {};
+    let foodLog = [];
+
+    nutrients.forEach(n => {
+      targets[n.key] = 0;
+      totals[n.key] = 0;
+    });
+
+    const STORAGE_PREFIX = "mfc_day_";
+
+    // DOM elements
+    const targetsGrid = document.getElementById("targets-grid");
+    const summaryBody = document.getElementById("summary-body");
+    const foodSelect = document.getElementById("food-select");
+    const foodGramsInput = document.getElementById("food-grams");
+    const foodForm = document.getElementById("food-form");
+    const foodsTbody = document.getElementById("foods-tbody");
+    const clearLogBtn = document.getElementById("clear-log");
+    const foodLibraryBody = document.getElementById("food-library-body");
+
+    const rdaAgeInput = document.getElementById("rda-age");
+    const rdaSexSelect = document.getElementById("rda-sex");
+    const rdaWeightInput = document.getElementById("rda-weight");
+    const rdaActivitySelect = document.getElementById("rda-activity");
+    const applyRdaBtn = document.getElementById("apply-rda");
+
+    const viewWeekBtn = document.getElementById("view-week");
+    const viewMonthBtn = document.getElementById("view-month");
+    const viewAllBtn = document.getElementById("view-all");
+    const historyBody = document.getElementById("history-body");
+    const historySummary = document.getElementById("history-summary");
+
+    // ---------- DATE HELPERS ----------
+    function getTodayDateString() {
+      const d = new Date();
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function parseDateString(str) {
+      return new Date(str + "T00:00:00");
+    }
+
+    // ---------- TARGET INPUTS ----------
+    function renderTargetInputs() {
+      targetsGrid.innerHTML = "";
+      nutrients.forEach(n => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "input-group";
+        wrapper.innerHTML = `
+          <label>${n.label}</label>
+          <div class="input-inline">
+            <input
+              type="number"
+              step="0.1"
+              min="0"
+              placeholder="Set target"
+              data-target="${n.key}"
+            />
+            <span class="pill">${n.unit}</span>
+          </div>
+        `;
+        targetsGrid.appendChild(wrapper);
+      });
+
+      const inputs = targetsGrid.querySelectorAll("input[data-target]");
+      inputs.forEach(input => {
+        input.addEventListener("input", () => {
+          const key = input.getAttribute("data-target");
+          const val = parseFloat(input.value);
+          targets[key] = isNaN(val) ? 0 : val;
+          updateSummaryTable();
+          saveCurrentDay(); // save target changes too (for completeness)
+        });
+      });
+    }
+
+    function setTargetValue(key, value) {
+      targets[key] = value;
+      const input = targetsGrid.querySelector(`input[data-target="${key}"]`);
+      if (input) input.value = value ? value.toFixed(1) : "";
+    }
+
+    // ---------- RDA HELPER ----------
+    function getMicronutrientTemplate(age, sex) {
+      if (age < 19) {
+        return {
+          calcium: 1000, phosphorus: 1250,
+          magnesium: sex === "male" ? 410 : 360,
+          sodium: 2000, potassium: 3600, chloride: 2300,
+          iron: sex === "male" ? 15 : 18,
+          zinc: sex === "male" ? 11 : 9,
+          iodine: 150, selenium: 55, copper: 0.9, manganese: 2.0,
+          vitA: sex === "male" ? 900 : 700,
+          vitD: 800, vitE: 15, vitK: 75,
+          vitB1: 1.2, vitB2: sex === "male" ? 1.3 : 1.0,
+          vitB3: sex === "male" ? 16 : 14,
+          vitB6: 1.3, folate: 400, b12: 2.4, vitc: 80
+        };
+      } else if (age <= 50) {
+        return {
+          calcium: 1000, phosphorus: 700,
+          magnesium: sex === "male" ? 420 : 320,
+          sodium: 2000, potassium: 3500, chloride: 2300,
+          iron: sex === "male" ? 17 : 21,
+          zinc: sex === "male" ? 12 : 10,
+          iodine: 140, selenium: 55, copper: 0.9, manganese: 2.3,
+          vitA: sex === "male" ? 900 : 700,
+          vitD: 800, vitE: 15,
+          vitK: sex === "male" ? 120 : 90,
+          vitB1: 1.2, vitB2: sex === "male" ? 1.3 : 1.1,
+          vitB3: sex === "male" ? 16 : 14,
+          vitB6: 1.7, folate: 400, b12: 2.4, vitc: 90
+        };
+      } else {
+        return {
+          calcium: 1200, phosphorus: 700,
+          magnesium: sex === "male" ? 420 : 320,
+          sodium: 1800, potassium: 3500, chloride: 2300,
+          iron: 15, zinc: sex === "male" ? 11 : 10,
+          iodine: 140, selenium: 55, copper: 0.9, manganese: 2.3,
+          vitA: sex === "male" ? 900 : 700,
+          vitD: 1000, vitE: 15,
+          vitK: sex === "male" ? 120 : 90,
+          vitB1: 1.2, vitB2: sex === "male" ? 1.3 : 1.1,
+          vitB3: sex === "male" ? 16 : 14,
+          vitB6: 1.7, folate: 400, b12: 2.4, vitc: 100
+        };
+      }
+    }
+
+    function computeRecommendedTargets(age, sex, weight, activity) {
+      if (!weight || weight <= 0) return;
+
+      const actFactors = { sedentary: 28, light: 30, moderate: 33, heavy: 38 };
+      const factor = actFactors[activity] || 33;
+      const energy = weight * factor;
+
+      const proteinByKg = 0.9 * weight;
+      const proteinByPct = (0.15 * energy) / 4;
+      const proteinTarget = Math.max(proteinByKg, proteinByPct);
+
+      const fatTarget = (0.3 * energy) / 9;
+      const carbTarget = (0.55 * energy) / 4;
+      const fiberTarget = 30;
+
+      const microTemplate = getMicronutrientTemplate(age, sex);
+
+      const satFat = 0.3 * fatTarget;
+      const polyFat = 0.35 * fatTarget;
+      const unsatFat = fatTarget - satFat;
+      const omega3 = Math.max(1, 0.03 * fatTarget);
+
+      return {
+        calories: energy,
+        protein: proteinTarget,
+        carbs: carbTarget,
+        fat: fatTarget,
+        fiber: fiberTarget,
+        sat_fat: satFat,
+        unsat_fat: unsatFat,
+        poly_fat: polyFat,
+        omega3: omega3,
+        ...microTemplate
+      };
+    }
+
+    function applyRecommendedTargets() {
+      const age = parseFloat(rdaAgeInput.value) || 30;
+      const sex = rdaSexSelect.value || "male";
+      const weight = parseFloat(rdaWeightInput.value);
+      const activity = rdaActivitySelect.value || "moderate";
+
+      const rec = computeRecommendedTargets(age, sex, weight, activity);
+      if (!rec) {
+        alert("Please enter a valid weight to use the recommended targets helper.");
+        return;
+      }
+
+      nutrients.forEach(n => {
+        const val = rec[n.key];
+        if (typeof val === "number") setTargetValue(n.key, val);
+      });
+
+      updateSummaryTable();
+      saveCurrentDay();
+    }
+
+    // ---------- FOOD SELECT ----------
+    function renderFoodOptions() {
+      foodSelect.innerHTML = "";
+      Object.entries(foodDatabase).forEach(([key, food]) => {
+        const opt = document.createElement("option");
+        opt.value = key;
+        opt.textContent = food.name;
+        foodSelect.appendChild(opt);
+      });
+    }
+
+    // ---------- SUMMARY TABLE ----------
+    function renderSummaryTableStructure() {
+      summaryBody.innerHTML = "";
+      nutrients.forEach(n => {
+        const tr = document.createElement("tr");
+        tr.setAttribute("data-nutrient", n.key);
+        tr.innerHTML = `
+          <td>
+            <span class="nutrient-name">${n.label}</span>
+            <span class="unit"> (${n.unit})</span>
+          </td>
+          <td class="summary-target">0</td>
+          <td class="summary-consumed">0</td>
+          <td class="summary-remaining">0</td>
+          <td class="summary-percent">
+            <span class="chip chip-na">—</span>
+          </td>
+        `;
+        summaryBody.appendChild(tr);
+      });
+    }
+
+    function updateSummaryTable() {
+      nutrients.forEach(n => {
+        const row = summaryBody.querySelector(`tr[data-nutrient="${n.key}"]`);
+        if (!row) return;
+
+        const t = targets[n.key] || 0;
+        const c = totals[n.key] || 0;
+        const remaining = t > 0 ? Math.max(t - c, 0) : 0;
+        const percent = t > 0 ? (c / t) * 100 : null;
+
+        row.querySelector(".summary-target").textContent = t.toFixed(1);
+        row.querySelector(".summary-consumed").textContent = c.toFixed(1);
+        row.querySelector(".summary-remaining").textContent = remaining.toFixed(1);
+
+        const percentCell = row.querySelector(".summary-percent");
+        percentCell.innerHTML = "";
+
+        const chip = document.createElement("span");
+        chip.classList.add("chip");
+
+        if (percent === null) {
+          chip.classList.add("chip-na");
+          chip.textContent = "No target";
+        } else {
+          const rounded = Math.round(percent);
+          chip.textContent = `${rounded}%`;
+          if (rounded < 90) chip.classList.add("chip-low");
+          else if (rounded <= 110) chip.classList.add("chip-ok");
+          else chip.classList.add("chip-high");
+        }
+
+        percentCell.appendChild(chip);
+      });
+    }
+
+    // ---------- FOOD LOG ----------
+    function renderFoodLog() {
+      if (foodLog.length === 0) {
+        foodsTbody.innerHTML = `
+          <tr>
+            <td colspan="4" class="small-note">
+              No foods added yet. Start by logging your first item.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      foodsTbody.innerHTML = "";
+      foodLog.forEach(entry => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>
+            ${entry.name}
+            <div class="small-note">from ${entry.grams} g</div>
+          </td>
+          <td>${entry.grams} g</td>
+          <td>${entry.nutrients.calories.toFixed(0)} kcal</td>
+          <td>
+            <button class="btn-remove" data-id="${entry.id}" title="Remove">
+              ✕
+            </button>
+          </td>
+        `;
+        foodsTbody.appendChild(tr);
+      });
+
+      foodsTbody.querySelectorAll(".btn-remove").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const id = Number(btn.getAttribute("data-id"));
+          removeFoodEntry(id);
+        });
+      });
+    }
+
+    function addFoodToLog(foodKey, grams) {
+      const food = foodDatabase[foodKey];
+      if (!food) return;
+
+      const factor = grams / 100;
+      const entryNutrients = {};
+
+      nutrients.forEach(n => {
+        const per100 = food.nutrients[n.key] || 0;
+        const amount = per100 * factor;
+        entryNutrients[n.key] = amount;
+        totals[n.key] += amount;
+      });
+
+      const entry = {
+        id: Date.now() + Math.random(),
+        key: foodKey,
+        name: food.name,
+        grams,
+        nutrients: entryNutrients
+      };
+
+      foodLog.push(entry);
+      renderFoodLog();
+      updateSummaryTable();
+      saveCurrentDay();
+    }
+
+    function removeFoodEntry(id) {
+      const index = foodLog.findIndex(e => e.id === id);
+      if (index === -1) return;
+      const entry = foodLog[index];
+
+      nutrients.forEach(n => {
+        totals[n.key] -= entry.nutrients[n.key] || 0;
+        if (totals[n.key] < 0) totals[n.key] = 0;
+      });
+
+      foodLog.splice(index, 1);
+      renderFoodLog();
+      updateSummaryTable();
+      saveCurrentDay();
+    }
+
+    function clearFoodLog() {
+      foodLog = [];
+      nutrients.forEach(n => (totals[n.key] = 0));
+      renderFoodLog();
+      updateSummaryTable();
+      saveCurrentDay();
+    }
+
+    // ---------- LOCAL STORAGE (DAILY RECORDS) ----------
+    function getStorageAvailable() {
+      try {
+        const testKey = "__mfc_test__";
+        window.localStorage.setItem(testKey, "1");
+        window.localStorage.removeItem(testKey);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    const storageAvailable = getStorageAvailable();
+
+    function storageKeyForDate(dateStr) {
+      return STORAGE_PREFIX + dateStr;
+    }
+
+    function saveCurrentDay() {
+      if (!storageAvailable) return;
+      const dateStr = getTodayDateString();
+      const record = {
+        date: dateStr,
+        totals,
+        foodLog
+      };
+      try {
+        localStorage.setItem(storageKeyForDate(dateStr), JSON.stringify(record));
+      } catch (e) {
+        console.warn("Could not save day record:", e);
+      }
+    }
+
+    function loadDayRecord(dateStr) {
+      if (!storageAvailable) return null;
+      const raw = localStorage.getItem(storageKeyForDate(dateStr));
+      if (!raw) return null;
+      try {
+        return JSON.parse(raw);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function loadTodayFromStorage() {
+      if (!storageAvailable) return;
+      const dateStr = getTodayDateString();
+      const rec = loadDayRecord(dateStr);
+      if (!rec) return;
+
+      // Restore totals
+      nutrients.forEach(n => {
+        totals[n.key] = (rec.totals && typeof rec.totals[n.key] === "number")
+          ? rec.totals[n.key]
+          : 0;
+      });
+
+      // Restore food log
+      foodLog = Array.isArray(rec.foodLog) ? rec.foodLog : [];
+
+      renderFoodLog();
+      updateSummaryTable();
+    }
+
+    function listAllStoredDates() {
+      if (!storageAvailable) return [];
+      const dates = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith(STORAGE_PREFIX)) {
+          const dateStr = key.slice(STORAGE_PREFIX.length);
+          dates.push(dateStr);
+        }
+      }
+      dates.sort();
+      return dates;
+    }
+
+    // ---------- FOOD LIBRARY ----------
+    function renderFoodLibrary() {
+      foodLibraryBody.innerHTML = "";
+      Object.values(foodDatabase).forEach(food => {
+        const n = food.nutrients;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${food.name}</td>
+          <td>${(n.calories || 0).toFixed(0)}</td>
+          <td>${(n.protein || 0).toFixed(1)}</td>
+          <td>${(n.carbs || 0).toFixed(1)}</td>
+          <td>${(n.fat || 0).toFixed(1)}</td>
+          <td>${(n.fiber || 0).toFixed(1)}</td>
+          <td>${(n.calcium || 0).toFixed(0)}</td>
+          <td>${(n.iron || 0).toFixed(1)}</td>
+          <td>${(n.potassium || 0).toFixed(0)}</td>
+          <td>${(n.magnesium || 0).toFixed(0)}</td>
+          <td>${(n.vitc || 0).toFixed(1)}</td>
+        `;
+        foodLibraryBody.appendChild(tr);
+      });
+    }
+
+    // ---------- HISTORY VIEW (WEEK/MONTH/ALL) ----------
+    function renderHistory(records, label) {
+      historyBody.innerHTML = "";
+      historySummary.textContent = "";
+
+      if (!records || records.length === 0) {
+        historyBody.innerHTML = `
+          <tr>
+            <td colspan="6" class="small-note">
+              No saved days for this range yet. Log foods on different days to build your history.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      let sumCalories = 0;
+      let sumProtein = 0;
+      let sumCarbs = 0;
+      let sumFat = 0;
+      let sumFiber = 0;
+
+      records.sort((a, b) => a.date.localeCompare(b.date));
+
+      records.forEach(rec => {
+        const t = rec.totals || {};
+        const cal = t.calories || 0;
+        const prot = t.protein || 0;
+        const carb = t.carbs || 0;
+        const fat = t.fat || 0;
+        const fib = t.fiber || 0;
+
+        sumCalories += cal;
+        sumProtein += prot;
+        sumCarbs += carb;
+        sumFat += fat;
+        sumFiber += fib;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${rec.date}</td>
+          <td>${cal.toFixed(0)}</td>
+          <td>${prot.toFixed(1)}</td>
+          <td>${carb.toFixed(1)}</td>
+          <td>${fat.toFixed(1)}</td>
+          <td>${fib.toFixed(1)}</td>
+        `;
+        historyBody.appendChild(tr);
+      });
+
+      const days = records.length;
+      const avgCalories = sumCalories / days;
+      const avgProtein = sumProtein / days;
+      const avgCarbs = sumCarbs / days;
+      const avgFat = sumFat / days;
+      const avgFiber = sumFiber / days;
+
+      historySummary.innerHTML = `
+        <strong>${label}</strong> – ${days} day(s) saved.
+        Average per day: Energy ${avgCalories.toFixed(0)} kcal,
+        Protein ${avgProtein.toFixed(1)} g, Carbs ${avgCarbs.toFixed(1)} g,
+        Fat ${avgFat.toFixed(1)} g, Fibre ${avgFiber.toFixed(1)} g.
+      `;
+    }
+
+    function loadHistoryRange(daysBack, label) {
+      if (!storageAvailable) {
+        renderHistory([], label);
+        return;
+      }
+      const allDates = listAllStoredDates();
+      if (allDates.length === 0) {
+        renderHistory([], label);
+        return;
+      }
+
+      const today = parseDateString(getTodayDateString());
+      const cutoff = new Date(today);
+      cutoff.setDate(today.getDate() - (daysBack - 1)); // inclusive range
+
+      const records = [];
+      allDates.forEach(dateStr => {
+        const d = parseDateString(dateStr);
+        if (d >= cutoff && d <= today) {
+          const rec = loadDayRecord(dateStr);
+          if (rec) records.push(rec);
+        }
+      });
+
+      renderHistory(records, label);
+    }
+
+    function loadHistoryAll() {
+      if (!storageAvailable) {
+        renderHistory([], "All days");
+        return;
+      }
+      const allDates = listAllStoredDates();
+      const records = allDates
+        .map(d => loadDayRecord(d))
+        .filter(Boolean);
+      renderHistory(records, "All days");
+    }
+
+    // ---------- EVENTS & INIT ----------
+    foodForm.addEventListener("submit", e => {
+      e.preventDefault();
+      const foodKey = foodSelect.value;
+      const grams = parseFloat(foodGramsInput.value);
+      if (!foodKey || isNaN(grams) || grams <= 0) return;
+      addFoodToLog(foodKey, grams);
+      foodGramsInput.value = "";
+      foodGramsInput.focus();
+    });
+
+    clearLogBtn.addEventListener("click", () => {
+      if (foodLog.length === 0) return;
+      const ok = confirm("Clear all foods from today’s log?");
+      if (!ok) return;
+      clearFoodLog();
+    });
+
+    applyRdaBtn.addEventListener("click", applyRecommendedTargets);
+
+    viewWeekBtn.addEventListener("click", () => {
+      loadHistoryRange(7, "Last 7 days");
+    });
+
+    viewMonthBtn.addEventListener("click", () => {
+      loadHistoryRange(30, "Last 30 days");
+    });
+
+    viewAllBtn.addEventListener("click", () => {
+      loadHistoryAll();
+    });
+
+    function init() {
+      renderTargetInputs();
+      renderFoodOptions();
+      renderSummaryTableStructure();
+      renderFoodLog();
+      renderFoodLibrary();
+      updateSummaryTable();
+      loadTodayFromStorage();
+      // Show last 7 days by default if any
+      loadHistoryRange(7, "Last 7 days");
+    }
+
+    init();
+  </script>
+</body>
+</html>
